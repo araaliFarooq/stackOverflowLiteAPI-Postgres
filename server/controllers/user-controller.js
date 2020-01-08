@@ -42,6 +42,8 @@ export default class UserController {
    */
   static async updateUser(id, data) {
     const updated = await models.User.update({ ...data }, { where: { id } });
+    console.log('update -->>', updated);
+
     return updated;
   }
 }

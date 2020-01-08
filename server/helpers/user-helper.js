@@ -44,8 +44,8 @@ class UserHelper {
 }
 
 export const sendUserEmailConfirmation = async (req, user) => {
-  const { _id, email } = user;
-  const token = await createToken({ id: _id, email });
+  const { id, email } = user;
+  const token = await createToken({ id, email });
 
   const mailOptions = {
     from: 'no-reply@yourwebapplication.com',

@@ -174,7 +174,7 @@ export default class UserView {
   static async confirmEmail(req, res) {
     try {
       const { id } = await decodeToken(req.params.token);
-      const user = await UserController.findOneUser({ _id: id });
+      const user = await UserController.findOneUser({ id });
       if (!user) {
         return res.status(404).send({
           message: 'User not Found',
@@ -187,10 +187,9 @@ export default class UserView {
           message: 'User is already verified'
         });
       }
-      const { nModified } = await UserController.updateUser(id, {
+      const nModified = await UserController.updateUser(id, {
         isVerified: true
       });
-
       return res.status(nModified ? 200 : 500).send({
         success: nModified,
         message: nModified

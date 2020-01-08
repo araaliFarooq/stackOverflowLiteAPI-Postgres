@@ -16,9 +16,7 @@ export default (sequelize, DataTypes) => {
     },
     isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
     passwordResetToken: { type: DataTypes.STRING },
-    passwordResetExpires: { type: DataTypes.DATE },
-    paranoid: true,
-    timestamps: true
+    passwordResetExpires: { type: DataTypes.DATE }
   });
 
   return User;
