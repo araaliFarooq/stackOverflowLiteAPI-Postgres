@@ -225,10 +225,10 @@ export default class UserView {
         message
       });
     }
-    const { _id: userId } = user;
+    const { id, email } = user;
     const token = await createToken({
-      id: userId,
-      email: user.email
+      id,
+      email
     });
     return res.send({
       success: true,
@@ -250,17 +250,17 @@ export default class UserView {
    */
   static async getUserProfile(req, res) {
     const { id } = req.user;
-    const user = await UserController.findOneUser({ _id: id });
+    const user = await UserController.findOneUser({ id });
     if (!user) {
       return res.status(404).send({
         success: false,
         message: 'User not found'
       });
     }
-    const { email, username, _id: userId } = user;
+    const { email, username, createdAt } = user;
     return res.status(200).send({
       success: true,
-      data: { id: userId, email, username }
+      data: { id, email, username, createdAt }
     });
   }
 }
