@@ -1,20 +1,20 @@
-import { QuestionService } from "../../services";
+import { QuestionController } from '../../controllers';
 
-export default class QuestionController {
+export default class QuestionView {
   /**
    * @param  {Request} req
    * @param  {Response} res
    * @returns {Promise<Response>} with array of all questions
    */
   static async getAllQuestions(req, res) {
-    const response = await QuestionService.findAllQuestions({});
+    const response = await QuestionController.findAllQuestions({});
     if (response.length > 0) {
       return res.status(200).send({
         data: response
       });
     }
     return res.status(204).send({
-      message: "No questions posted yet"
+      message: 'No questions posted yet'
     });
   }
 
@@ -28,14 +28,14 @@ export default class QuestionController {
       params: { id }
     } = req;
 
-    const response = await QuestionService.findOneQuestion({ _id: id });
+    const response = await QuestionController.findOneQuestion({ id });
     if (response) {
       return res.status(200).send({
         data: response
       });
     }
-    return res.status(204).send({
-      message: "Question not found"
+    return res.status(404).send({
+      message: 'Question not found'
     });
   }
 
@@ -46,22 +46,23 @@ export default class QuestionController {
    */
   static async postQuestion(req, res) {
     try {
-      const exception = await QuestionController.validateDocs(req);
+      const exception = await QuestionView.validateDocs(req);
       if (exception) {
         return res.status(409).send({ message: exception });
       }
+
       const data = { ...req.body, userId: req.user.id };
-      const question = await QuestionService.postQuestion({
+      const question = await QuestionController.postQuestion({
         ...data
       });
       return res.status(201).send({
         question,
-        message: "Question posted successfully",
+        message: 'Question posted successfully',
         success: true
       });
     } catch (error) {
       return res.status(500).send({
-        message: error.message || "Couldnot post question",
+        message: error.message || 'Couldnot post question',
         success: false
       });
     }
@@ -77,33 +78,41 @@ export default class QuestionController {
       const qstnId = req.params.id;
       const userId = req.user.id;
 
-      const qstnById = await QuestionService.findOneQuestion({
-        _id: qstnId
+      const qstnById = await QuestionController.findOneQuestion({
+        id: qstnId
       });
       if (!qstnById) {
         return res.status(400).send({
-          message: "Question does not exist",
+          message: 'Question does not exist',
           success: false
         });
       }
-      if (qstnById.userId.equals(userId)) {
-        const exception = await QuestionController.validateDocs(req);
+      if (qstnById.userId === userId) {
+        const exception = await QuestionView.validateDocs(req);
         if (exception) {
           return res.status(409).send({ message: exception });
         }
         const data = { ...req.body };
-        const updatedQuestion = await QuestionService.updateQuestion(qstnId, {
-          ...data
+        const updatedQuestion = await QuestionController.updateQuestion(
+          qstnId,
+          {
+            ...data
+          }
+        );
+        return res.status(updatedQuestion[0] ? 200 : 500).send({
+          success: !!updatedQuestion[0],
+          message: updatedQuestion[0]
+            ? 'Question successfully updated'
+            : 'Update not successfully'
         });
-        return res.status(200).send({ updatedQuestion });
       }
       return res.status(401).send({
-        message: "unauthorized to edit question",
+        message: 'unauthorized to edit question',
         success: false
       });
     } catch (error) {
       return res.status(500).send({
-        message: error.message || "Couldnot edit question",
+        message: error.message || 'Couldnot edit question',
         success: false
       });
     }
@@ -118,29 +127,29 @@ export default class QuestionController {
       body: { title, qstnbody },
       params: { id }
     } = req;
-    let exception = "";
+    let exception = '';
 
-    const qstnBytitle = await QuestionService.findOneQuestion({
+    const qstnBytitle = await QuestionController.findOneQuestion({
       title
     });
 
-    const qstnBybody = await QuestionService.findOneQuestion({
+    const qstnBybody = await QuestionController.findOneQuestion({
       qstnbody
     });
 
     if (id) {
       // eslint-disable-next-line no-underscore-dangle
-      if (qstnBytitle && qstnBytitle._id.equals(id) === false) {
+      if (qstnBytitle && (qstnBytitle.id === id) === false) {
         exception = `Title "${title}" is already in use`;
       }
       // eslint-disable-next-line no-underscore-dangle
-      if (qstnBybody && qstnBybody._id.equals(id) === false) {
-        exception = "This question already exists. Check out its answers";
+      if (qstnBybody && (qstnBybody.id === id) === false) {
+        exception = 'This question already exists. Check out its answers';
       }
     } else if (qstnBytitle || qstnBybody) {
       exception = qstnBytitle
         ? `Title "${title}" is already in use`
-        : "This question already exists. Check out its answers";
+        : 'This question already exists. Check out its answers';
     }
     return exception;
   }
@@ -155,37 +164,36 @@ export default class QuestionController {
       const qstnId = req.params.id;
       const userId = req.user.id;
 
-      const qstnById = await QuestionService.findOneQuestion({
-        _id: qstnId
+      const qstnById = await QuestionController.findOneQuestion({
+        id: qstnId
       });
+
       if (!qstnById) {
         return res.status(400).send({
-          message: "Question does not exist",
+          message: 'Question does not exist',
           success: false
         });
       }
-      if (qstnById.userId.equals(userId)) {
-        const deletedResponse = await QuestionService.deleteQuestion({
-          _id: qstnId
-        });
-        if (deletedResponse.deletedCount > 0) {
+      if (qstnById.userId === userId) {
+        const deletedResponse = await QuestionController.deleteQuestion(qstnId);
+        if (deletedResponse) {
           return res.status(200).send({
-            message: "Question deleted successfully",
+            message: 'Question deleted successfully',
             success: true
           });
         }
         return res.status(400).send({
-          message: "Couldnot delete question",
+          message: 'Couldnot delete question',
           success: false
         });
       }
       return res.status(401).send({
-        message: "unauthorized to edit question",
+        message: 'unauthorized to edit question',
         success: false
       });
     } catch (error) {
       return res.status(500).send({
-        message: error.message || "Couldnot delete question",
+        message: error.message || 'Couldnot delete question',
         success: false
       });
     }

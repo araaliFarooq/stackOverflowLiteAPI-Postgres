@@ -19,5 +19,12 @@ export default (sequelize, DataTypes) => {
     passwordResetExpires: { type: DataTypes.DATE }
   });
 
+  User.associate = (models) => {
+    User.hasMany(models.Question, {
+      foreignKey: 'userId',
+      as: 'questions'
+    });
+  };
+
   return User;
 };

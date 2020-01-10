@@ -1,31 +1,31 @@
-import { Router } from "express";
-import { questionValidator, SecureRoute } from "../../middleware/index";
-import QuestionController from "./question-controller";
+import { Router } from 'express';
+import { questionValidator, SecureRoute } from '../../middleware/index';
+import QuestionView from './question-views';
 
 const questionRouter = Router();
 
 questionRouter.post(
-  "",
+  '',
   SecureRoute.loginRequired,
   questionValidator.validateCreateQuestion,
-  QuestionController.postQuestion
+  QuestionView.postQuestion
 );
 
 questionRouter.put(
-  "/:id",
+  '/:id',
   SecureRoute.loginRequired,
   questionValidator.validateCreateQuestion,
-  QuestionController.updateQuestion
+  QuestionView.updateQuestion
 );
 
 questionRouter.delete(
-  "/:id",
+  '/:id',
   SecureRoute.loginRequired,
-  QuestionController.deleteQuestion
+  QuestionView.deleteQuestion
 );
 
-questionRouter.get("", QuestionController.getAllQuestions);
+questionRouter.get('', QuestionView.getAllQuestions);
 
-questionRouter.get("/:id", QuestionController.getSingleQuestions);
+questionRouter.get('/:id', QuestionView.getSingleQuestions);
 
 export default questionRouter;

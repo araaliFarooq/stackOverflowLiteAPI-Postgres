@@ -1,7 +1,7 @@
 import express from 'express';
 import logger from 'morgan';
 import { json, urlencoded } from 'body-parser';
-import userRouter from './server/routes';
+import { userRouter, questionRouter } from './server/routes';
 
 // Set up the express app
 const app = express();
@@ -16,6 +16,7 @@ app.use(urlencoded({ extended: false }));
 
 // all routes shall be added here
 app.use(`${prefix}/users`, userRouter);
+app.use(`${prefix}/questions`, questionRouter);
 // Setup a default catch-all route that sends back a welcome message in JSON format.
 app.get('*', (req, res) =>
   res.status(200).send({
