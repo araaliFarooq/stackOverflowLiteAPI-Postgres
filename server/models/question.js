@@ -19,7 +19,12 @@ export default (sequelize, DataTypes) => {
   Question.associate = (models) => {
     Question.belongsTo(models.User, {
       foreignKey: 'userId',
+      as: 'author',
       onDelete: 'CASCADE'
+    });
+    Question.hasMany(models.Answer, {
+      foreignKey: 'questionId',
+      as: 'answers'
     });
     // associations can be defined here
   };

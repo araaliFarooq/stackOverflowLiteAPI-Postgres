@@ -7,13 +7,21 @@ export default class QuestionView {
    * @returns {Promise<Response>} with array of all questions
    */
   static async getAllQuestions(req, res) {
-    const response = await QuestionController.findAllQuestions({});
-    if (response.length > 0) {
-      return res.status(200).send({
-        data: response
+    const response = await QuestionController.findAllQuestions();
+
+    if (response.rows.length > 0) {
+      const { rows } = response;
+      const data = [];
+      rows.forEach((row) => {
+        const answerCount = row.answers.length;
+        // eslint-disable-next-line no-param-reassign
+        row.answerCount = answerCount;
+        data.push(row);
       });
+
+      return res.status(200).send(data);
     }
-    return res.status(204).send({
+    return res.status(404).send({
       message: 'No questions posted yet'
     });
   }

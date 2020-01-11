@@ -7,7 +7,7 @@ Models => Database schemas
 
 import UserController from './user-controller';
 import QuestionController from './question-controller';
-// import AnswerService from "./answer-services";
+import AnswerController from './answer-controller';
 
 // export { UserService, QuestionService, AnswerService };
-export { UserController, QuestionController };
+export { UserController, QuestionController, AnswerController };

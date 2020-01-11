@@ -7,7 +7,7 @@ the main prefix for the endpoint will be defined in the app.js
 
 import userRouter from './user';
 import questionRouter from './question';
-// import answerRouter from "./answer";
+import answerRouter from './answer';
 
-export { userRouter, questionRouter };
+export { userRouter, questionRouter, answerRouter };
 // export { userRouter, questionRouter, answerRouter };

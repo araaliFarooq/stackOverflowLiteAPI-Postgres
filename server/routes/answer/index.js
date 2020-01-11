@@ -1,14 +1,14 @@
-import { Router } from "express";
-import { answerValidator, SecureRoute } from "../../middleware/index";
-import AnswerController from "./answer-controller";
+import { Router } from 'express';
+import { answerValidator, SecureRoute } from '../../middleware/index';
+import AnswerView from './answer-view';
 
 const answerRouter = Router();
 
 answerRouter.post(
-  "/:id/answers",
+  '/:id/answers',
   SecureRoute.loginRequired,
   answerValidator.validateAnswer,
-  AnswerController.postAnswer
+  AnswerView.postAnswer
 );
 
 // answerRouter.put(
@@ -24,6 +24,6 @@ answerRouter.post(
 //   QuestionController.deleteQuestion
 // );
 
-answerRouter.get("", AnswerController.getAllAnswers);
+answerRouter.get('', AnswerView.getAllAnswers);
 
 export default answerRouter;
